@@ -23,6 +23,8 @@ ready *CIVIL;
 
 void display();
 void insert();
+void save_database();  
+
 int roll_number_generator;
 
 int main()
@@ -33,8 +35,12 @@ int main()
 		scanf("%d",&op);
 		if(op == 1)
 			insert();
-		else
+		else if(op == 2)
 			display();
+		else if(op == 3)
+			save_database();
+		else
+			return 0;
 			
 	}
 }
@@ -107,6 +113,11 @@ void ece_depart(ready **ece_ptr,int roll)
 	ready *temp =(ready *)malloc(sizeof(ready));
 
 	temp->roll=roll;
+	temp->department[0]="E";
+	temp->department[1]="C";
+	temp->department[2]="E";
+	
+	
 
 	printf("Enter the name of the student: ");
 	scanf("%s",temp->name);
@@ -131,6 +142,7 @@ void ece_depart(ready **ece_ptr,int roll)
 		temp->next=NULL;
 
 	}
+	save_database(temp);
 
 
 }
@@ -141,6 +153,11 @@ void mech_depart(ready **mech_ptr,int roll)
 	ready *temp =(ready *)malloc(sizeof(ready));
 
 	temp->roll=roll;
+	temp->department[0]="M";
+	temp->department[1]="E";
+	temp->department[2]="C";
+	temp->department[3]="H";
+	
 
 	printf("Enter the name of the student: ");
 	scanf("%s",temp->name);
@@ -167,6 +184,7 @@ void mech_depart(ready **mech_ptr,int roll)
 
 	}
 
+	save_database(temp);
 
 }
 
@@ -176,6 +194,10 @@ void eee_depart(ready **eee_ptr,int roll)
 	ready *temp =(ready *)malloc(sizeof(ready));
 
 	temp->roll=roll;
+	temp->department[0]="E";
+	temp->department[1]="E";
+	temp->department[2]="E";
+	
 
 	printf("Enter the name of the student: ");
 	scanf("%s",temp->name);
@@ -203,6 +225,7 @@ void eee_depart(ready **eee_ptr,int roll)
 	}
 
 
+	save_database(temp);
 }
 
 void civil_depart(ready **civil_ptr,int roll)
@@ -211,6 +234,11 @@ void civil_depart(ready **civil_ptr,int roll)
 	ready *temp =(ready *)malloc(sizeof(ready));
 
 	temp->roll=roll;
+	temp->department[0]="C";
+	temp->department[1]="I";
+	temp->department[4]="V";
+	temp->department[3]="I";
+	temp->department[4]="L";
 	
 	printf("Enter the name of the student: ");
 	scanf("%s",temp->name);
@@ -236,5 +264,25 @@ void civil_depart(ready **civil_ptr,int roll)
 		temp->next=NULL;
 
 	}
+	save_database(temp);
 }
-
+void save_database(ready*details)
+{
+	FILE*file=fopen("EXample.csv","a");
+	if(file == NULL)
+	{
+		printf("the file was not available do u want me to create one\n");
+		printf("creating ... \n");
+		printf("file was successfuly created..\n");
+		file=fopen("EXample.txt","w");
+		file=fopen("EXample.csv","a");
+		fprintf(file,"rollno         name         mark ");
+		return;
+	}
+	fprintf(file,"%d  ",details->roll);
+	for(int i=0;details->department[i];i++)
+		fprintf(file,"%s  ",details->department[i]);
+	fprintf(file,"%s  ",details->name);
+	fprintf(file,"%f  \n",details->marks);
+	fclose(file);
+}
