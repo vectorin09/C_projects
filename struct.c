@@ -46,28 +46,12 @@ int main()
 }
 void display()
 {
-	printf("which Department you want to display\n1.ECE\n2.MECH\n3.CIVIL\n4.EEE");
-	int prefer;
-	scanf("%d",&prefer);
-	ready *temp;
-	if(prefer == 1)
-		temp=ECE;
-	else if(prefer ==2)
-		temp=MECH;
-	else if(prefer == 3)
-		temp=CIVIL;
-	else if(prefer == 4)
-		temp=EEE;
-	else
-		printf("???invalid department");
-	while(temp!=NULL)
-	{
-		printf("%d ",temp->roll);
-		printf("%s ",temp->name);
-		printf("%f\n",temp->marks);
-		temp=temp->next;
-	}
-	return;
+	char buffer;
+	FILE*file=fopen("data_base.txt","r");
+	while((buffer=fgetc(file))!=EOF)
+		printf("%c",buffer);
+
+
 }
 void insert()
 {
@@ -113,9 +97,9 @@ void ece_depart(ready **ece_ptr,int roll)
 	ready *temp =(ready *)malloc(sizeof(ready));
 
 	temp->roll=roll;
-	temp->department[0]="E";
-	temp->department[1]="C";
-	temp->department[2]="E";
+
+	strcpy(temp->department,"ECE");
+	
 	
 	
 
@@ -153,11 +137,8 @@ void mech_depart(ready **mech_ptr,int roll)
 	ready *temp =(ready *)malloc(sizeof(ready));
 
 	temp->roll=roll;
-	temp->department[0]="M";
-	temp->department[1]="E";
-	temp->department[2]="C";
-	temp->department[3]="H";
 	
+	strcpy(temp->department,"MECH");
 
 	printf("Enter the name of the student: ");
 	scanf("%s",temp->name);
@@ -194,15 +175,11 @@ void eee_depart(ready **eee_ptr,int roll)
 	ready *temp =(ready *)malloc(sizeof(ready));
 
 	temp->roll=roll;
-	temp->department[0]="E";
-	temp->department[1]="E";
-	temp->department[2]="E";
 	
-
 	printf("Enter the name of the student: ");
 	scanf("%s",temp->name);
-
-
+	
+	strcpy(temp->department,"EEE");
 	printf("\nEnter the marks : ");
 
 	scanf("%f",&(*temp).marks);
@@ -234,11 +211,8 @@ void civil_depart(ready **civil_ptr,int roll)
 	ready *temp =(ready *)malloc(sizeof(ready));
 
 	temp->roll=roll;
-	temp->department[0]="C";
-	temp->department[1]="I";
-	temp->department[4]="V";
-	temp->department[3]="I";
-	temp->department[4]="L";
+
+	strcpy(temp->department,"CIVIL");
 	
 	printf("Enter the name of the student: ");
 	scanf("%s",temp->name);
@@ -268,21 +242,20 @@ void civil_depart(ready **civil_ptr,int roll)
 }
 void save_database(ready*details)
 {
-	FILE*file=fopen("EXample.csv","a");
+	FILE*file=fopen("data_base.txt","a");
 	if(file == NULL)
 	{
 		printf("the file was not available do u want me to create one\n");
 		printf("creating ... \n");
 		printf("file was successfuly created..\n");
-		file=fopen("EXample.txt","w");
-		file=fopen("EXample.csv","a");
+		file=fopen("data_base.txt","w");
+		file=fopen("data_base.txt","a");
 		fprintf(file,"rollno         name         mark ");
 		return;
 	}
 	fprintf(file,"%d  ",details->roll);
-	for(int i=0;details->department[i];i++)
-		fprintf(file,"%s  ",details->department[i]);
 	fprintf(file,"%s  ",details->name);
+	fprintf(file,"%s ",details->department);
 	fprintf(file,"%f  \n",details->marks);
 	fclose(file);
 }
