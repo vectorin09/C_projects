@@ -89,7 +89,7 @@ void insert()
 
 		
 }
-void depart_separation(ready **ece_ptr,int roll,int op)
+void depart_separation(ready **depart_ptr,int roll,int op)
 {
 
 	ready *temp =(ready *)malloc(sizeof(ready));
@@ -113,14 +113,14 @@ void depart_separation(ready **ece_ptr,int roll,int op)
 
 	scanf("%f",&(*temp).marks);
 
-	if(*ece_ptr ==NULL)
+	if(*depart_ptr ==NULL)
 	{
-		*ece_ptr=temp;
+		*depart_ptr=temp;
 		temp->next=NULL;
 	}
 	else
 	{
-		ready *iter=*ece_ptr;
+		ready *iter=*depart_ptr;
 		while(iter->next!=NULL)
 		{
 			iter=iter->next;
