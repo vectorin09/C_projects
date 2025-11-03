@@ -10,10 +10,8 @@ typedef struct student
 	struct student *next;
 }ready;
 
-void ece_depart(ready **,int);
-void mech_depart(ready **,int);
-void eee_depart(ready **,int);
-void civil_depart(ready **,int);
+void depart_separation(ready **,int,int);
+
 
 ready *ECE;
 ready *MECH;
@@ -65,25 +63,25 @@ void insert()
 	if(depart == 1)
 	{
 		++roll_number_generator;
-		ece_depart(&ECE,roll_number_generator);
+		depart_separation(&ECE,roll_number_generator,depart);
 	}
 	else if(depart == 2)
 	{
 
 		++roll_number_generator;
-		mech_depart(&MECH,roll_number_generator);
+		depart_separation(&MECH,roll_number_generator,depart);
 	}
 	else if(depart == 3)
 	{
 				
 		++roll_number_generator;
-		civil_depart(&CIVIL,roll_number_generator);
+		depart_separation(&CIVIL,roll_number_generator,depart);
 	}
 	else if(depart == 4)
 	{
 		
 		++roll_number_generator;
-		eee_depart(&EEE,roll_number_generator);
+		depart_separation(&EEE,roll_number_generator,depart);
 	}
 	else
 		return;
@@ -91,14 +89,19 @@ void insert()
 
 		
 }
-void ece_depart(ready **ece_ptr,int roll)
+void depart_separation(ready **ece_ptr,int roll,int op)
 {
 
 	ready *temp =(ready *)malloc(sizeof(ready));
 
 	temp->roll=roll;
 
-	strcpy(temp->department,"ECE");
+	if (op ==1)strcpy(temp->department,"ECE");
+	else if (op ==2)strcpy(temp->department,"MECH");
+	else if (op ==3)strcpy(temp->department,"CIVIL");
+	else if (op ==4)strcpy(temp->department,"EEE");
+	else 
+		return;	
 	
 	
 	
@@ -131,115 +134,6 @@ void ece_depart(ready **ece_ptr,int roll)
 
 }
 
-void mech_depart(ready **mech_ptr,int roll)
-{
-
-	ready *temp =(ready *)malloc(sizeof(ready));
-
-	temp->roll=roll;
-	
-	strcpy(temp->department,"MECH");
-
-	printf("Enter the name of the student: ");
-	scanf("%s",temp->name);
-
-
-	printf("\nEnter the marks : ");
-
-	scanf("%f",&(*temp).marks);
-
-	if(*mech_ptr ==NULL)
-	{
-		*mech_ptr=temp;
-		temp->next=NULL;
-	}
-	else
-	{
-		ready *iter=*mech_ptr;
-		while(iter->next!=NULL)
-		{
-			iter=iter->next;
-		}
-		iter->next=temp;
-		temp->next=NULL;
-
-	}
-
-	save_database(temp);
-
-}
-
-void eee_depart(ready **eee_ptr,int roll)
-{
-
-	ready *temp =(ready *)malloc(sizeof(ready));
-
-	temp->roll=roll;
-	
-	printf("Enter the name of the student: ");
-	scanf("%s",temp->name);
-	
-	strcpy(temp->department,"EEE");
-	printf("\nEnter the marks : ");
-
-	scanf("%f",&(*temp).marks);
-
-	if(*eee_ptr ==NULL)
-	{
-		*eee_ptr=temp;
-		temp->next=NULL;
-	}
-	else
-	{
-		ready *iter=*eee_ptr;
-		while(iter->next!=NULL)
-		{
-			iter=iter->next;
-		}
-		iter->next=temp;
-		temp->next=NULL;
-
-	}
-
-
-	save_database(temp);
-}
-
-void civil_depart(ready **civil_ptr,int roll)
-{
-
-	ready *temp =(ready *)malloc(sizeof(ready));
-
-	temp->roll=roll;
-
-	strcpy(temp->department,"CIVIL");
-	
-	printf("Enter the name of the student: ");
-	scanf("%s",temp->name);
-
-
-	printf("\nEnter the marks : ");
-
-	scanf("%f",&(*temp).marks);
-
-	if(*civil_ptr ==NULL)
-	{
-		*civil_ptr=temp;
-		temp->next=NULL;
-	}
-	else
-	{
-		ready *iter=*civil_ptr;
-		while(iter->next!=NULL)
-		{
-			iter=iter->next;
-		}
-		iter->next=temp;
-		temp->next=NULL;
-
-	}
-	save_database(temp);
-}
 void save_database(ready*details)
 {
 	FILE*file=fopen("data_base.txt","a");
