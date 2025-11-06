@@ -129,19 +129,18 @@ void insert()
 	else if(depart == 2)
 	{
 
-		++roll_number_generator;
 		depart_separation(&MECH,count,depart);
 	}
 	else if(depart == 3)
 	{
 				
-		++roll_number_generator;
+	
 		depart_separation(&CIVIL,count,depart);
 	}
 	else if(depart == 4)
 	{
 		
-		++roll_number_generator;
+	
 		depart_separation(&EEE,count,depart);
 	}
 	
@@ -151,7 +150,7 @@ void insert()
 
 		
 }
-void depart_separation(ready **ece_ptr,int roll,int op)
+void depart_separation(ready **department_ptr,int roll,int op)
 {
 
 	ready *temp =(ready *)malloc(sizeof(ready));
@@ -175,14 +174,14 @@ void depart_separation(ready **ece_ptr,int roll,int op)
 
 	scanf("%f",&(*temp).marks);
 
-	if(*ece_ptr ==NULL)
+	if(*department_ptr ==NULL)
 	{
-		*ece_ptr=temp;
+		*department_ptr=temp;
 		temp->next=NULL;
 	}
 	else
 	{
-		ready *iter=*ece_ptr;
+		ready *iter=*department_ptr;
 		while(iter->next!=NULL)
 		{
 			iter=iter->next;
