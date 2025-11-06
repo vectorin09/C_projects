@@ -10,21 +10,15 @@ typedef struct student
 	struct student *next;
 }ready;
 
-void depart_separation(ready **,int,int);
 
 
-ready *ECE;
-ready *MECH;
-ready *EEE;
-ready *CSE;
-ready *CIVIL;
+
+ready *head_ptr;
 
 void display();
-void delete(ready **,int);
+void delete();
 void insert();
 void save_database();  
-
-int roll_number_generator;
 
 int main()
 {
@@ -38,68 +32,84 @@ int main()
 			display();
 		else if(op == 3)
 		{
-			int spc ,roll;
-			printf("Enter which department student details which you want to delete \n 1.ECE 2.MECH 3.EEE 4.CIVIL\n");
-			scanf("%d %d" ,&spc,&roll);
-			switch(spc)
-			{
-				case 1:delete(&ECE,roll);
-				       break;
-				case 2:delete(&MECH,roll);
-				       break;
-				case 3:delete(&EEE,roll);
-			       		break;
-				case 4:delete(&CIVIL,roll);
-				       break;
-				default:
-				       printf("Entered an wrong department");
-			}
+			delete();		
 		}
 		else
 			return 0;
 			
 	}
 }
-void delete(ready **node,int roll)
+void delete()
 {
-	ready *ptr=*node;
-	ready *temp=*node;
-	while(ptr->next!=NULL)
-	{
-		if((ptr->roll == roll))
-		{
-			ptr->department[0]='\0';
-			ptr->name[0]='\0';
-			ptr->marks=0;
-	
-		}
-		ptr=ptr->next;
-	}
-	printf("After the deletions of the details \n the students int the departments are \n");
-	while(temp->next !=NULL)
-	{
-		printf("%d %s %s %f\n",temp->roll,temp->name,temp->department,temp->marks);
-		temp=temp->next;
-	}
+	FILE*data_base=fopen("data_base.txt","r");
+	FILE*data_base_c=fopen("data_base_c.txt","w");
 
+	int word_existance=0;
+	char word[100];
+	char buffer[100];
+	printf("Enter the name to delete");
+	scanf("%s",word);
+	int count=0;
+	int flag=1;
+	int flag_2=0;
+	while(fscanf(data_base,"%s",buffer)!=EOF)
+	{
+		
+		if(strcmp(buffer,word)!=0 && flag)
+		{
+			fprintf(data_base_c,"%s",buffer);
+			fprintf(data_base_c,"%c",' ');
+
+			
+		}
+
+		else
+		{
+			fprintf(data_base_c,"%c",'#');
+			flag=0;
+			flag_2++;
+			if(flag_2 == 3) flag=1;
+		}
+	
+		
+		count++;
+		
+		if(count == 4) 
+		{
+	
+			fprintf(data_base_c,"%c",'\n');
+			count=0;
+		}
+	
+		
+	}	
+ 
+	fclose(data_base);
+	fclose(data_base_c);	
+		
 
 }
 void display()
 {
+
+	
 	int count=0;
 	char buffer;
-	FILE*file=fopen("data_base.txt","r");
+	FILE*file=fopen("data_base_c.txt","r");
 	while((buffer=fgetc(file))!=EOF)
 	{
 	
-		printf("%c",buffer);
+		if(buffer !='#')
+		{
+			printf("%c",buffer);
+		}
 	}
 
 
 }
 void insert()
 {
-	int depart;
+	int op;
 
 	char buffer;
 
@@ -120,68 +130,36 @@ void insert()
 	printf("1.ECE\n2.MECH\n3.CIVIL\n4.EEE\nEnter the student department: ");
 
 
-	scanf("%d",&depart);
+	scanf("%d",&op);
 
-	if(depart == 1)
-	{
-		depart_separation(&ECE,count,depart);
-	}
-	else if(depart == 2)
-	{
-
-		depart_separation(&MECH,count,depart);
-	}
-	else if(depart == 3)
-	{
-				
 	
-		depart_separation(&CIVIL,count,depart);
-	}
-	else if(depart == 4)
-	{
-		
-	
-		depart_separation(&EEE,count,depart);
-	}
-	
-	else
-		printf("rady %d",count);
-
-
-		
-}
-void depart_separation(ready **department_ptr,int roll,int op)
-{
-
 	ready *temp =(ready *)malloc(sizeof(ready));
 
-	temp->roll=roll;
+	temp->roll=count;
 
 	if (op ==1)strcpy(temp->department,"ECE");
 	else if (op ==2)strcpy(temp->department,"MECH");
 	else if (op ==3)strcpy(temp->department,"CIVIL");
 	else if (op ==4)strcpy(temp->department,"EEE");
 	else 
-		return;	
-	
-	
-	
+		return;		
 
 	printf("Enter the name of the student: ");
+	
 	scanf("%s",temp->name);
 
 	printf("\nEnter the marks : ");
 
 	scanf("%f",&(*temp).marks);
 
-	if(*department_ptr ==NULL)
+	if(head_ptr ==NULL)
 	{
-		*department_ptr=temp;
+		head_ptr=temp;
 		temp->next=NULL;
 	}
 	else
 	{
-		ready *iter=*department_ptr;
+		ready *iter=head_ptr;
 		while(iter->next!=NULL)
 		{
 			iter=iter->next;
@@ -192,28 +170,54 @@ void depart_separation(ready **department_ptr,int roll,int op)
 	}
 	save_database(temp);
 
-
+		
 }
-
-
 
 void save_database(ready*details)
 {
-	FILE*file=fopen("data_base.txt","a");
-	if(file == NULL)
+	char buffer;
+	int flag=1;
+	int flag_2=1;
+	FILE *fl=fopen("data_base_c.txt","r+");
+	while((buffer=fgetc(fl))!=EOF)
 	{
-		printf("the file was not available do u want me to create one\n");
-		printf("creating ... \n");
-		printf("file was successfuly created..\n");
-		file=fopen("data_base.txt","w");
-		file=fopen("data_base.txt","a");
-		fprintf(file,"rollno         name         mark ");
-		return;
+		if(buffer =='#' )
+		{
+			long pos;
+			pos=ftell(fl)-1;
+			fseek(fl,pos,SEEK_SET);
+			if(flag ==1 )
+			{
+				fprintf(fl,"%s ",details->name);
+				flag++;
+
+			}
+			else if(flag ==2)
+			{
+				fprintf(fl,"%s ",details->department);
+				flag++;
+			}
+			else if(flag ==3)
+			{
+				fprintf(fl,"%f ",details->marks);
+				flag=1;
+			}
+			
+			flag_2=0;
+		}
 	}
-	fprintf(file,"%d  ",details->roll);
-	fprintf(file,"%s  ",details->name);
-	fprintf(file,"%s ",details->department);
-	fprintf(file,"%f  \n",details->marks);
-	fclose(file);
+	fclose(fl);
 	
+	if(flag_2)
+	{
+		FILE*file=fopen("data_base.txt","a");
+	
+		fprintf(file,"%d  ",details->roll);
+		fprintf(file,"%s  ",details->name);
+		fprintf(file,"%s ",details->department);
+		fprintf(file,"%f  \n",details->marks);
+		fclose(file);
+	}
+
+		
 }
