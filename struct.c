@@ -199,7 +199,7 @@ void save_database(ready*details)
 			}
 			else if(flag ==3)
 			{
-				fprintf(fl,"%f ",details->marks);
+				fprintf(fl,"%f \n",details->marks);
 				flag=1;
 			}
 			
