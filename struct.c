@@ -20,6 +20,7 @@ ready *CSE;
 ready *CIVIL;
 
 void display();
+void delete(ready **,int);
 void insert();
 void save_database();  
 
@@ -36,24 +37,85 @@ int main()
 		else if(op == 2)
 			display();
 		else if(op == 3)
-			save_database();
+		{
+			int spc ,roll;
+			printf("Enter which department student details which you want to delete \n 1.ECE 2.MECH 3.EEE 4.CIVIL\n");
+			scanf("%d %d" ,&spc,&roll);
+			switch(spc)
+			{
+				case 1:delete(&ECE,roll);
+				       break;
+				case 2:delete(&MECH,roll);
+				       break;
+				case 3:delete(&EEE,roll);
+			       		break;
+				case 4:delete(&CIVIL,roll);
+				       break;
+				default:
+				       printf("Entered an wrong department");
+			}
+		}
 		else
 			return 0;
 			
 	}
 }
+void delete(ready **node,int roll)
+{
+	ready *ptr=*node;
+	ready *temp=*node;
+	while(ptr->next!=NULL)
+	{
+		if((ptr->roll == roll))
+		{
+			ptr->department[0]='\0';
+			ptr->name[0]='\0';
+			ptr->marks=0;
+	
+		}
+		ptr=ptr->next;
+	}
+	printf("After the deletions of the details \n the students int the departments are \n");
+	while(temp->next !=NULL)
+	{
+		printf("%d %s %s %f\n",temp->roll,temp->name,temp->department,temp->marks);
+		temp=temp->next;
+	}
+
+
+}
 void display()
 {
+	int count=0;
 	char buffer;
 	FILE*file=fopen("data_base.txt","r");
 	while((buffer=fgetc(file))!=EOF)
+	{
+	
 		printf("%c",buffer);
+	}
 
 
 }
 void insert()
 {
 	int depart;
+
+	char buffer;
+
+	int count=1;
+	FILE*fp=fopen("data_base.txt","r");
+	if(fp != NULL)
+	{
+		while(((buffer=getc(fp))!=EOF))
+		{	
+			if(buffer == '\n')
+			{
+				count++;
+			}
+
+		}
+	}
 
 	printf("1.ECE\n2.MECH\n3.CIVIL\n4.EEE\nEnter the student department: ");
 
@@ -62,34 +124,34 @@ void insert()
 
 	if(depart == 1)
 	{
-		++roll_number_generator;
-		depart_separation(&ECE,roll_number_generator,depart);
+		depart_separation(&ECE,count,depart);
 	}
 	else if(depart == 2)
 	{
 
 		++roll_number_generator;
-		depart_separation(&MECH,roll_number_generator,depart);
+		depart_separation(&MECH,count,depart);
 	}
 	else if(depart == 3)
 	{
 				
 		++roll_number_generator;
-		depart_separation(&CIVIL,roll_number_generator,depart);
+		depart_separation(&CIVIL,count,depart);
 	}
 	else if(depart == 4)
 	{
 		
 		++roll_number_generator;
-		depart_separation(&EEE,roll_number_generator,depart);
+		depart_separation(&EEE,count,depart);
 	}
+	
 	else
-		return;
+		printf("rady %d",count);
 
 
 		
 }
-void depart_separation(ready **depart_ptr,int roll,int op)
+void depart_separation(ready **ece_ptr,int roll,int op)
 {
 
 	ready *temp =(ready *)malloc(sizeof(ready));
@@ -113,14 +175,14 @@ void depart_separation(ready **depart_ptr,int roll,int op)
 
 	scanf("%f",&(*temp).marks);
 
-	if(*depart_ptr ==NULL)
+	if(*ece_ptr ==NULL)
 	{
-		*depart_ptr=temp;
+		*ece_ptr=temp;
 		temp->next=NULL;
 	}
 	else
 	{
-		ready *iter=*depart_ptr;
+		ready *iter=*ece_ptr;
 		while(iter->next!=NULL)
 		{
 			iter=iter->next;
@@ -133,6 +195,8 @@ void depart_separation(ready **depart_ptr,int roll,int op)
 
 
 }
+
+
 
 void save_database(ready*details)
 {
@@ -152,4 +216,5 @@ void save_database(ready*details)
 	fprintf(file,"%s ",details->department);
 	fprintf(file,"%f  \n",details->marks);
 	fclose(file);
+	
 }
