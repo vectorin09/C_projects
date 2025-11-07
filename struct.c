@@ -7,7 +7,6 @@ typedef struct student
 	char name[20];
      	int roll;
 	float marks;
-	struct student *next;
 }ready;
 
 
@@ -152,22 +151,6 @@ void insert()
 
 	scanf("%f",&(*temp).marks);
 
-	if(head_ptr ==NULL)
-	{
-		head_ptr=temp;
-		temp->next=NULL;
-	}
-	else
-	{
-		ready *iter=head_ptr;
-		while(iter->next!=NULL)
-		{
-			iter=iter->next;
-		}
-		iter->next=temp;
-		temp->next=NULL;
-
-	}
 	save_database(temp);
 
 		
