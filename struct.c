@@ -17,7 +17,7 @@ ready *head_ptr;
 
 int count=0;
 void display(ready*);
-void delete();
+void delete(ready *);
 void insert(ready **);
 void save_database();  
 
@@ -33,7 +33,6 @@ int main()
 		printf("|                      D/d :      Delete a record              |\n");
 		printf("|                      S/s :      Show the list                |\n");
 		printf("|                      A/a :      Modifiy the record           |\n");
-		printf("|                      D/d :      Delete a record              |\n");
 		printf("|                      V/v :      Save                         |\n");
 		printf("|                      E/e :      Exit                         |\n");
 		printf("|                      T/t :      Sort the list                |\n");
@@ -43,68 +42,106 @@ int main()
 
 		printf("                      Enter the choice: ");	
 		char options;
-		scanf("%c",&options);
+		scanf(" %c",&options);
 				
 		if(options == 'A' || options == 'a')
-
+		{
 			insert(&head_ptr);
+		}
 		else if(options == 'S'||options =='s')
+		{
 			display(head_ptr);
+		}
 		else if(options == 'D'|| options == 'd')
 		{
-			delete();		
+			delete(head_ptr);		
 		}
 		else
-			return 0;
+		{
+			if (options == 'E'|| 'e')
+			{
+				return 0;
+			}
+		}
+			
+
+	
 		
 			
 			
 	}
 }
-void delete()
+void delete(ready*temp)
 {
 	char dele_op;
-	printf("\n********************Enter **************************\n");
-	printf("|		    R/r : Enter Roll no to delete    |\n");
-	printf("|                   N/n : Ente the name to delete    |\n");
+      printf("\n|*************************Enter***********************|\n");
+	printf("|		    R/r : Enter Roll no to delete     |\n");
+	printf("|                   N/n : Enter the name to delete    |\n");
 	printf("******************************************************\n");
 	printf("Enter the choice: ");
-	scanf("%c",&dele_op);
+	scanf(" %c",&dele_op);
 	if(dele_op == 'R'|| dele_op == 'r')
 	{
+		int roll;
+		printf("              Enter the roll no:");
+		scanf("%d",&roll);
+		if(temp->roll == roll)
+		{
+			strcpy(temp->name,"");
+			
+			strcpy(temp->department,"");
+			temp->marks=0;
+		}
+		else
+		{
+			ready *temper=temp;
+			while(temper->next!=NULL)
+			{
+				if(temper->roll == roll)
+				{
+					strcpy(temper->name,"");
+					strcpy(temper->department,"");
+					temper->marks=0;
+				}
+				
+			}
 
+
+
+		}
 	}
 	else if(dele_op =='N'|| dele_op =='n')
 	{
 
+		
+
 	}
-	else
-		return;
+	
 
 
 }
 void display(ready *temp)
 {
 	int exit=0;
-	printf("\n************************Student Details********************************\n");
+	printf("\n************************Student Details*****************************\n");
+	printf("|roll |               NAME           |            Mark              |\n");
+	printf("---------------------------------------------------------------------|\n");
 	while(temp!=NULL)
 	{
-		printf("-------------------------------------------------------------------\n");
-		printf("                  %s            |            %f                    \n",temp->name,temp->marks);
-		printf("--------------------------------------------------------------------\n");
+        printf("  %d                  %s                       %f               \n",temp->roll,temp->name,temp->marks);
+	printf("--------------------------------------------------------------------\n");
 		temp=temp->next;
 
 	}
-	
-	printf("                Press any key to exit: ");
-	scanf("%d",&exit);
-	while(1)
-	{	
-		if(exit)
-		{
-			return;
-		}
+	char options='\0';
+	printf("                     Enter any key to exit:");
+	scanf(" %c",&options);
+	if(options)
+	{
+		return;
 	}
+	
+	
 }
 
 void insert(ready**head_ptr)
@@ -121,6 +158,7 @@ void insert(ready**head_ptr)
 	printf("------------------------------------------------\n");
 	printf("               Enter The Marks: ");
 	scanf("%f",&temp->marks);
+	temp->roll=count;
 
 	if(*head_ptr==NULL)
 	{
@@ -143,5 +181,4 @@ void insert(ready**head_ptr)
 
 
 		
-
 
