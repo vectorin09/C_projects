@@ -7,6 +7,7 @@ typedef struct student
 	char name[20];
      	int roll;
 	float marks;
+	struct student *next;
 }ready;
 
 
@@ -14,193 +15,133 @@ typedef struct student
 
 ready *head_ptr;
 
-void display();
+int count=0;
+void display(ready*);
 void delete();
-void insert();
+void insert(ready **);
 void save_database();  
 
 int main()
 {
 	while(1)
 	{
-		int  op;
-		scanf("%d",&op);
-		if(op == 1)
-			insert();
-		else if(op == 2)
-			display();
-		else if(op == 3)
+
+
+
+		printf("\n******************************STUDENT RECORD*******************\n");
+		printf("|                      A/a :      Add a new record             |\n");
+		printf("|                      D/d :      Delete a record              |\n");
+		printf("|                      S/s :      Show the list                |\n");
+		printf("|                      A/a :      Modifiy the record           |\n");
+		printf("|                      D/d :      Delete a record              |\n");
+		printf("|                      V/v :      Save                         |\n");
+		printf("|                      E/e :      Exit                         |\n");
+		printf("|                      T/t :      Sort the list                |\n");
+	      	printf("|                      L/l :      Delete all the record        |\n");
+		printf("|                      R/r :      Reverse the list             |\n");
+		printf("****************************************************************\n");
+
+		printf("                      Enter the choice: ");	
+		char options;
+		scanf("%c",&options);
+				
+		if(options == 'A' || options == 'a')
+
+			insert(&head_ptr);
+		else if(options == 'S'||options =='s')
+			display(head_ptr);
+		else if(options == 'D'|| options == 'd')
 		{
 			delete();		
 		}
 		else
 			return 0;
+		
+			
 			
 	}
 }
 void delete()
 {
-	FILE*data_base=fopen("data_base.txt","r");
-	FILE*data_base_c=fopen("data_base_c.txt","w");
-
-	int word_existance=0;
-	char word[100];
-	char buffer[100];
-	printf("Enter the name to delete");
-	scanf("%s",word);
-	int count=0;
-	int flag=1;
-	int flag_2=0;
-	while(fscanf(data_base,"%s",buffer)!=EOF)
+	char dele_op;
+	printf("\n********************Enter **************************\n");
+	printf("|		    R/r : Enter Roll no to delete    |\n");
+	printf("|                   N/n : Ente the name to delete    |\n");
+	printf("******************************************************\n");
+	printf("Enter the choice: ");
+	scanf("%c",&dele_op);
+	if(dele_op == 'R'|| dele_op == 'r')
 	{
-		
-		if(strcmp(buffer,word)!=0 && flag)
-		{
-			fprintf(data_base_c,"%s",buffer);
-			fprintf(data_base_c,"%c",' ');
 
-			
-		}
+	}
+	else if(dele_op =='N'|| dele_op =='n')
+	{
 
-		else
-		{
-			fprintf(data_base_c,"%c",'#');
-			flag=0;
-			flag_2++;
-			if(flag_2 == 3) flag=1;
-		}
-	
-		
-		count++;
-		
-		if(count == 4) 
-		{
-	
-			fprintf(data_base_c,"%c",'\n');
-			count=0;
-		}
-	
-		
-	}	
- 
-	fclose(data_base);
-	fclose(data_base_c);	
-		
+	}
+	else
+		return;
+
 
 }
-void display()
+void display(ready *temp)
 {
-
-	
-	int count=0;
-	char buffer;
-	FILE*file=fopen("data_base_c.txt","r");
-	while((buffer=fgetc(file))!=EOF)
+	int exit=0;
+	printf("\n************************Student Details********************************\n");
+	while(temp!=NULL)
 	{
+		printf("-------------------------------------------------------------------\n");
+		printf("                  %s            |            %f                    \n",temp->name,temp->marks);
+		printf("--------------------------------------------------------------------\n");
+		temp=temp->next;
+
+	}
 	
-		if(buffer !='#')
+	printf("                Press any key to exit: ");
+	scanf("%d",&exit);
+	while(1)
+	{	
+		if(exit)
 		{
-			printf("%c",buffer);
+			return;
 		}
 	}
-
-
 }
-void insert()
+
+void insert(ready**head_ptr)
 {
-	int op;
+	count++;
+	ready *temp=(ready *)malloc(sizeof(ready));
+	printf("----------------------------------------------\n");
+	printf("               Enter The Student Name: ");
+	scanf("%s" ,temp->name);
+	printf("-----------------------------------------------\n");
+	printf("1.ECE \n 2.MECH \n 3.EEE \n 4.CIVIL \n");
+	printf("               Enter The Department: ");
+	scanf("%s",temp->department);
+	printf("------------------------------------------------\n");
+	printf("               Enter The Marks: ");
+	scanf("%f",&temp->marks);
 
-	char buffer;
-
-	int count=1;
-	FILE*fp=fopen("data_base.txt","r");
-	if(fp != NULL)
+	if(*head_ptr==NULL)
 	{
-		while(((buffer=getc(fp))!=EOF))
-		{	
-			if(buffer == '\n')
-			{
-				count++;
-			}
-
-		}
+		*head_ptr=temp;
+		temp->next=NULL;
 	}
+	else
+	{
+		ready *temper=*head_ptr;
+		while(temper->next!=NULL)
+		{
+			temper=temper->next;
+		}
+		temper->next=temp;
 
-	printf("1.ECE\n2.MECH\n3.CIVIL\n4.EEE\nEnter the student department: ");
-
-
-	scanf("%d",&op);
-
+	}
 	
-	ready *temp =(ready *)malloc(sizeof(ready));
-
-	temp->roll=count;
-
-	if (op ==1)strcpy(temp->department,"ECE");
-	else if (op ==2)strcpy(temp->department,"MECH");
-	else if (op ==3)strcpy(temp->department,"CIVIL");
-	else if (op ==4)strcpy(temp->department,"EEE");
-	else 
-		return;		
-
-	printf("Enter the name of the student: ");
 	
-	scanf("%s",temp->name);
+}
 
-	printf("\nEnter the marks : ");
-
-	scanf("%f",&(*temp).marks);
-
-	save_database(temp);
 
 		
-}
 
-void save_database(ready*details)
-{
-	char buffer;
-	int flag=1;
-	int flag_2=1;
-	FILE *fl=fopen("data_base_c.txt","r+");
-	while((buffer=fgetc(fl))!=EOF)
-	{
-		if(buffer =='#' )
-		{
-			long pos;
-			pos=ftell(fl)-1;
-			fseek(fl,pos,SEEK_SET);
-			if(flag ==1 )
-			{
-				fprintf(fl,"%s ",details->name);
-				flag++;
 
-			}
-			else if(flag ==2)
-			{
-				fprintf(fl,"%s ",details->department);
-				flag++;
-			}
-			else if(flag ==3)
-			{
-				fprintf(fl,"%f \n",details->marks);
-				flag=1;
-			}
-			
-			flag_2=0;
-		}
-	}
-	fclose(fl);
-	
-	if(flag_2)
-	{
-		FILE*file=fopen("data_base.txt","a");
-	
-		fprintf(file,"%d  ",details->roll);
-		fprintf(file,"%s  ",details->name);
-		fprintf(file,"%s ",details->department);
-		fprintf(file,"%f  \n",details->marks);
-		fclose(file);
-	}
-
-		
-}
