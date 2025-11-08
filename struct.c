@@ -22,7 +22,7 @@ void delete(ready *);
 void insert(ready **);  
 void mod(ready *);
 void save(ready*);
-void sort(ready *);
+void sort(ready );
 int main()
 {
 	while(1)
@@ -68,7 +68,7 @@ int main()
 		}
 		else if(options == 'T'||options == 't')
 		{
-			sort(head_ptr);
+			sort(*head_ptr);
 		}
 		else
 		{
@@ -336,6 +336,7 @@ void mod(ready*head_ptr)
 int save_flag=0;
 void save(ready*head_ptr)
 {
+	save_flag=1;
 	ready*temp=head_ptr;
 	while(temp!=NULL)
 	{
@@ -348,8 +349,54 @@ void save(ready*head_ptr)
 	}
 
 }
-void sort(ready *head_ptr)
+void sort(ready head_ptr)
 {
+	ready temp=head_ptr;
+	ready *sort_head_ptr;
+	ready *sort_temp=(ready*)malloc(sizeof(ready));
+	int i,j;
+	printf("\n************************After sorting********************\n");
+	printf("\n----------------------------------------------------------\n");
+	while(temp.next!=NULL)
+	{
+		sort_temp->roll=temp.roll;
+		sort_temp->next=NULL;
+		if(sort_head_ptr ==NULL)
+		{
+			sort_head_ptr=sort_temp;
+		}
+		else
+		{
+			ready*sec_ptr=sort_head_ptr;
+			while(sec_ptr!=NULL)
+			{
+				if((strcmp(sec_ptr->next->name,sort_temp->name)==1 )&&(strcmp(sec_ptr->name,sort_temp->name)==-1) )
+				{
+					sort_temp->next=sec_ptr->next;
+					sec_ptr->next=sort_temp;
 
+				}
+				else if(strcmp(sec_ptr->name,sort_temp->name)==-1  && sec_ptr == sort_head_ptr)
+				{
+					sort_temp->next=sort_head_ptr;
+					sort_head_ptr=sort_temp;
+				}
+				else 
+				{
+					sec_ptr->next=sort_temp;
+				}
+
+				sec_ptr=sec_ptr->next;
+			}
+		}
+		
+		temp=*(temp.next);
+
+
+	}
 }
+	
+	
+
+
 		
