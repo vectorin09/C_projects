@@ -15,7 +15,7 @@ typedef struct student
 
 ready *head_ptr;
 
-int count=0;
+int count=1;
 int delete_flag=0;
 void display(ready*);
 void delete(ready *);
@@ -23,6 +23,15 @@ void insert(ready **);
 void mod(ready *);
 void save(ready*);
 void sort(ready *);
+int fun_exit();
+void reverse_print();
+
+
+void display_from_file(void);
+int display_file_flag=1;
+void sort_from_file(void);
+
+
 int main()
 {
 	while(1)
@@ -74,7 +83,9 @@ int main()
 		{
 			if (options == 'E'|| 'e')
 			{
-				return 0;
+				int op =fun_exit();
+				if(op == 1|| op==0)
+					return 0;
 			}
 		}
 			
@@ -170,12 +181,17 @@ void delete(ready*temp)
 void display(ready *temp)
 {
 	int exit=0;
+	if(display_file_flag)
+	{
+		display_from_file();
+		return;
+	}
 	printf("\n************************Student Details*****************************\n");
 	printf("|roll |               NAME           |            Mark              |\n");
 	printf("---------------------------------------------------------------------\n");
 	while(temp!=NULL)
 	{
-        printf("  %d                  %s                       %f               \n",temp->roll,temp->name,temp->marks);
+        printf("  %d                  %s                                  %f\n",temp->roll,temp->name,temp->marks);
 	printf("--------------------------------------------------------------------\n");
 		temp=temp->next;
 
@@ -193,8 +209,22 @@ void display(ready *temp)
 
 void insert(ready**head_ptr)
 {
-	count++;
+	
 	printf("%d",delete_flag);
+	display_file_flag=0;
+	char buffer;
+	FILE*fp=fopen("data_base.txt","r");
+	if(fp != NULL)
+	{
+		while(((buffer=getc(fp))!=EOF))
+		{
+			if(buffer == '\n')
+			{
+				count++;
+
+			}
+		}
+	}
 	ready *temp=(ready *)malloc(sizeof(ready));
 	printf("----------------------------------------------\n");
 	printf("               Enter The Student Name: ");
@@ -204,6 +234,7 @@ void insert(ready**head_ptr)
 	scanf("%f",&temp->marks);
 	temp->roll=count;
 	temp->next=NULL;
+	count++;
 	if(count && delete_flag)
 	{
 		ready*ptr=*head_ptr;
@@ -333,10 +364,10 @@ void mod(ready*head_ptr)
 
 		
 }
-int save_flag=0;
+int save_flag=1;
 void save(ready*head_ptr)
 {
-	save_flag=1;
+	save_flag=0;
 	ready*temp=head_ptr;
 	while(temp!=NULL)
 	{
@@ -373,10 +404,9 @@ void sort(ready *head_ptr)
 			ready *sort_iter_header_ptr= sort_head_ptr;
 			while(sort_iter_header_ptr->next!=NULL)
 			{
-				if((strcmp(sort_temp->name[1],sort_iter_header_ptr->name)<0) && (sort_iter_header_ptr == sort_head_ptr))
+				if((sort_temp->name[0] < sort_iter_header_ptr->name[0]) && (sort_iter_header_ptr == sort_head_ptr))
 					break;
-				else if((strcmp(sort_temp->name,sort_iter_header_ptr->name)>0) && (strcmp(sort_temp->name,sort_iter_header_ptr->next->name)<0))
-				
+				else if((sort_temp->name[0] > sort_iter_header_ptr->name[0]) && (sort_temp->name[0]< sort_iter_header_ptr->next->name[0]))
 					break;
 				
 				sort_iter_header_ptr=sort_iter_header_ptr->next;
@@ -399,4 +429,52 @@ void sort(ready *head_ptr)
 	}
 	
 	display(sort_head_ptr);
+}
+int fun_exit()
+{
+	if(save_flag)
+	{
+		char op;
+		printf("**************************************************************************************************");
+		printf("\nE/e:Exit  without saving the file \nV/v Exit with saving the file  \n****************************************************************************************\n                 Enter the choices:");
+		scanf(" %c",&op);
+		if(op == 'v'|| op == 'V')
+		{
+			save(head_ptr);
+			printf("\n******************************saved sucessfully********************************\n");
+			return 0;
+		}
+		else
+			return 0;
+	}
+	else
+		return 1;
+}
+void display_from_file()
+{
+	
+		char buffer[20];
+		int co=0;
+		FILE*file_open=fopen("data_base.txt","r");
+		printf("\n************************Student Details*****************************\n");
+		printf("|roll |               NAME           |            Mark              |\n");
+		printf("---------------------------------------------------------------------\n");
+	
+		while(fscanf(file_open,"%s",buffer)!=EOF)
+		{
+		
+			printf("  %s                            ",buffer);
+			co++;
+			if(co==3)
+			{
+				printf("\n");
+				printf("-------------------------------------------------------------------\n");
+				co=0;
+			}
+		}
+		
+
+	
+	
+	
 }
