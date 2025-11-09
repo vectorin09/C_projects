@@ -1,22 +1,23 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+
 typedef struct student
 {
 	char department[8];
 	char name[20];
-     	int roll;
+	int roll;
 	float marks;
 	struct student *next;
 }ready;
 
+ready *head_ptr = NULL;
 
+int count = 1;
+int delete_flag = 0;
+int save_flag = 1;
+int display_file_flag = 1;
 
-
-ready *head_ptr;
-
-int count=1;
-int delete_flag=0;
 void display(ready*);
 void delete(ready *);
 void insert(ready **);  
@@ -24,457 +25,532 @@ void mod(ready *);
 void save(ready*);
 void sort(ready *);
 int fun_exit();
-void reverse_print();
-
-
 void display_from_file(void);
-int display_file_flag=1;
-void sort_from_file(void);
-
+void load_from_file(void);
 
 int main()
 {
+	load_from_file();  // Load existing data on startup
+	
 	while(1)
 	{
-
-
-
 		printf("\n******************************STUDENT RECORD*******************\n");
 		printf("|                      A/a :      Add a new record             |\n");
 		printf("|                      D/d :      Delete a record              |\n");
 		printf("|                      S/s :      Show the list                |\n");
-		printf("|                      M/m :      Modifiy the record           |\n");
+		printf("|                      M/m :      Modify the record            |\n");
 		printf("|                      V/v :      Save                         |\n");
 		printf("|                      E/e :      Exit                         |\n");
 		printf("|                      T/t :      Sort the list                |\n");
-	      	printf("|                      L/l :      Delete all the record        |\n");
-		printf("|                      R/r :      Reverse the list             |\n");
 		printf("****************************************************************\n");
 
 		printf("                      Enter the choice: ");	
 		char options;
-		scanf(" %c",&options);
+		scanf(" %c", &options);
 				
 		if(options == 'A' || options == 'a')
 		{
 			insert(&head_ptr);
 		}
-		else if(options == 'S'||options =='s')
+		else if(options == 'S' || options == 's')
 		{
 			display(head_ptr);
 		}
-		else if(options == 'D'|| options == 'd')
+		else if(options == 'D' || options == 'd')
 		{
 			delete(head_ptr);		
 		}
-		else if(options =='M'|| options == 'm')
+		else if(options == 'M' || options == 'm')
 		{
 			mod(head_ptr);
 		}
-		else if(options == 'V'|| options == 'v' )
+		else if(options == 'V' || options == 'v')
 		{
 			save(head_ptr);
 		}
-		else if(options == 'T'||options == 't')
+		else if(options == 'T' || options == 't')
 		{
 			sort(head_ptr);
 		}
-		else
+		else if(options == 'E' || options == 'e')  // FIXED: proper condition
 		{
-			if (options == 'E'|| 'e')
-			{
-				int op =fun_exit();
-				if(op == 1|| op==0)
-					return 0;
-			}
+			int op = fun_exit();
+			if(op == 1 || op == 0)
+				return 0;
 		}
-			
-
-	
-		
-			
-			
 	}
 }
-void delete(ready*temp)
+
+void load_from_file(void)
 {
+	FILE *fp = fopen("data_base.txt", "r");
+	if(fp == NULL)
+		return;
+	
+	int roll;
+	char name[20];
+	float marks;
+	
+	while(fscanf(fp, "%d %s %f", &roll, name, &marks) == 3)
+	{
+		ready *temp = (ready *)malloc(sizeof(ready));
+		temp->roll = roll;
+		strcpy(temp->name, name);
+		temp->marks = marks;
+		strcpy(temp->department, "N/A");
+		temp->next = NULL;
+		
+		if(head_ptr == NULL)
+		{
+			head_ptr = temp;
+		}
+		else
+		{
+			ready *ptr = head_ptr;
+			while(ptr->next != NULL)
+			{
+				ptr = ptr->next;
+			}
+			ptr->next = temp;
+		}
+		
+		if(roll >= count)
+			count = roll + 1;
+	}
+	
+	fclose(fp);
+	display_file_flag = 0;
+}
+
+void delete(ready *temp)
+{
+	if(temp == NULL)
+	{
+		printf("No records to delete!\n");
+		return;
+	}
+	
 	char dele_op;
-      printf("\n|*************************Enter***********************|\n");
-	printf("|		    R/r : Enter Roll no to delete     |\n");
-	printf("|                   N/n : Enter the name to delete    |\n");
+	printf("\n|*************************Enter***********************|\n");
+	printf("|            R/r : Enter Roll no to delete            |\n");
+	printf("|            N/n : Enter the name to delete           |\n");
 	printf("******************************************************|\n");
 	printf("Enter the choice: ");
-	scanf(" %c",&dele_op);
+	scanf(" %c", &dele_op);
 
-	if(dele_op == 'R'|| dele_op == 'r')
+	if(dele_op == 'R' || dele_op == 'r')
 	{
 		int roll;
-		printf("Enter the roll no:");
-		scanf("%d",&roll);
-		if(temp->roll == roll)
+		printf("Enter the roll no: ");
+		scanf("%d", &roll);
+		
+		ready *temper = temp;
+		int found = 0;
+		while(temper != NULL)
 		{
-			delete_flag++;
-			strcpy(temp->name,"");
-			strcpy(temp->department,"");
-			temp->marks=0;
-		}
-		else
-		{
-			ready *temper=temp;
-			while(temper!=NULL)
+			if(temper->roll == roll)
 			{
-				if(temper->roll == roll)
-				{
-					delete_flag++;
-					strcpy(temper->name,"");
-					strcpy(temper->department,"");
-					temper->marks=0;
-
-				}
-				temper=temper->next;
-				
+				delete_flag++;
+				found = 1;
+				strcpy(temper->name, "");
+				strcpy(temper->department, "");
+				temper->marks = 0;
+				printf("Record deleted successfully!\n");
+				break;
 			}
-
-
-
+			temper = temper->next;
 		}
-
+		if(!found)
+			printf("Roll number not found!\n");
 	}
-	else if(dele_op =='N'|| dele_op =='n')
+	else if(dele_op == 'N' || dele_op == 'n')
 	{
 		char check_str[20];
-		printf("Enter the name:");
-		scanf("%s",check_str);
-		if(strcmp(temp->name,check_str)==0)
-		{
-			delete_flag++;
-			strcpy(temp->name,"");
-			strcpy(temp->department,"");
-			temp->marks=0;
-		}
-		else
-		{
-			
-			ready *temper=temp;
-			while(temper!=NULL)
-			{
-				if(strcmp(temper->name,check_str)==0)
-				{
-					delete_flag++;
-					strcpy(temper->name,"");
-					strcpy(temper->department,"");
-					temper->marks=0;
-				}
-				temper=temper->next;
-			}
-
-
+		printf("Enter the name: ");
+		scanf("%s", check_str);
 		
-
+		ready *temper = temp;
+		int found = 0;
+		while(temper != NULL)
+		{
+			if(strcmp(temper->name, check_str) == 0)
+			{
+				delete_flag++;
+				found = 1;
+				strcpy(temper->name, "");
+				strcpy(temper->department, "");
+				temper->marks = 0;
+				printf("Record deleted successfully!\n");
+				break;
+			}
+			temper = temper->next;
 		}
+		if(!found)
+			printf("Name not found!\n");
 	}
-
-	
-
-
 }
+
 void display(ready *temp)
 {
-	int exit=0;
-	if(display_file_flag)
+	if(temp == NULL)
 	{
-		display_from_file();
+		printf("\nNo records to display!\n");
+		char options;
+		printf("Enter any key to exit: ");
+		scanf(" %c", &options);
 		return;
 	}
+	
 	printf("\n************************Student Details*****************************\n");
-	printf("|roll |               NAME           |            Mark              |\n");
+	printf("| Roll |        NAME        |    Department    |       Marks        |\n");
 	printf("---------------------------------------------------------------------\n");
-	while(temp!=NULL)
+	
+	int has_records = 0;
+	while(temp != NULL)
 	{
-        printf("  %d                  %s                                  %f\n",temp->roll,temp->name,temp->marks);
-	printf("--------------------------------------------------------------------\n");
-		temp=temp->next;
-
-	}
-	char options='\0';
-	printf("                     Enter any key to exit:");
-	scanf(" %c",&options);
-	if(options)
-	{
-		return;
+		if(strcmp(temp->name, "") != 0)  // Skip deleted records
+		{
+			printf("  %-6d %-20s %-18s %.2f\n", temp->roll, temp->name, temp->department, temp->marks);
+			printf("---------------------------------------------------------------------\n");
+			has_records = 1;
+		}
+		temp = temp->next;
 	}
 	
+	if(!has_records)
+		printf("No active records!\n");
 	
+	char options;
+	printf("\nEnter any key to exit: ");
+	scanf(" %c", &options);
 }
 
-void insert(ready**head_ptr)
+void insert(ready **head_ptr)
 {
+	display_file_flag = 0;
+	save_flag = 1;  // Mark as unsaved
 	
-	printf("%d",delete_flag);
-	display_file_flag=0;
-	char buffer;
-	FILE*fp=fopen("data_base.txt","r");
-	if(fp != NULL)
-	{
-		while(((buffer=getc(fp))!=EOF))
-		{
-			if(buffer == '\n')
-			{
-				count++;
-
-			}
-		}
-	}
-	ready *temp=(ready *)malloc(sizeof(ready));
+	ready *temp = (ready *)malloc(sizeof(ready));
+	
 	printf("----------------------------------------------\n");
-	printf("               Enter The Student Name: ");
-	scanf("%s" ,temp->name);
-	printf("------------------------------------------------\n");
-	printf("               Enter The Marks: ");
-	scanf("%f",&temp->marks);
-	temp->roll=count;
-	temp->next=NULL;
+	printf("        Enter The Student Name: ");
+	scanf("%s", temp->name);
+	printf("----------------------------------------------\n");
+	printf("        Enter The Department: ");
+	scanf("%s", temp->department);
+	printf("----------------------------------------------\n");
+	printf("        Enter The Marks: ");
+	scanf("%f", &temp->marks);
+	
+	temp->roll = count;
+	temp->next = NULL;
 	count++;
-	if(count && delete_flag)
+	
+	// Try to reuse deleted slot
+	if(delete_flag > 0)
 	{
-		ready*ptr=*head_ptr;
-		
-		while(ptr->next!=NULL)
+		ready *ptr = *head_ptr;
+		while(ptr != NULL)
 		{
-			if(strcmp(ptr->name,"")==0)
+			if(strcmp(ptr->name, "") == 0)
 			{
-				
-				strcpy(ptr->name,temp->name);
-				ptr->marks=temp->marks;
+				strcpy(ptr->name, temp->name);
+				strcpy(ptr->department, temp->department);
+				ptr->marks = temp->marks;
+				free(temp);
+				delete_flag--;
+				printf("Record added successfully!\n");
+				return;
 			}
-			ptr=ptr->next;
+			ptr = ptr->next;
 		}
-		delete_flag--;
-
 	}
 
-	else if(*head_ptr==NULL)
+	if(*head_ptr == NULL)
 	{
-		*head_ptr=temp;
-		temp->next=NULL;
+		*head_ptr = temp;
 	}
 	else
 	{
-		ready *temper=*head_ptr;
-		while(temper->next!=NULL)
+		ready *temper = *head_ptr;
+		while(temper->next != NULL)
 		{
-			temper=temper->next;
+			temper = temper->next;
 		}
-		temper->next=temp;
-
+		temper->next = temp;
 	}
 	
-	
+	printf("Record added successfully!\n");
 }
-void mod(ready*head_ptr)
+
+void mod(ready *head_ptr)
 {
+	if(head_ptr == NULL)
+	{
+		printf("No records to modify!\n");
+		return;
+	}
 	
-      printf("\n|*************************Requirments*****************|\n");
-	printf("|		    N/n : search by name              |\n");
-	printf("|                   P/p : search by percentage        |\n");
-	printf("|                   R/r : search by roll              |\n");
+	printf("\n|*************************Requirements*****************|\n");
+	printf("|            N/n : search by name                     |\n");
+	printf("|            R/r : search by roll                     |\n");
 	printf("******************************************************|\n");
 	printf("Enter the choice: ");
 	char op;
-	scanf(" %c",&op);
-	ready*temp=head_ptr;
-	if(op == 'N'|| op == 'n')
+	scanf(" %c", &op);
+	ready *temp = head_ptr;
+	
+	if(op == 'N' || op == 'n')
 	{
 		char name[20];
-		printf("Enter the name to be find ");
-		scanf("%s",name);
-		while(temp->next!=NULL)
+		printf("Enter the name to find: ");
+		scanf("%s", name);
+		
+		int found = 0;
+		while(temp != NULL)
 		{
-			if(strcmp(name,temp->name)==0)
+			if(strcmp(name, temp->name) == 0)
 			{
+				found = 1;
 				char mod_op;
-			
-      				printf("\n|*************************Requirments*****************|\n");
-				printf("|		    N/n : change the  name              |\n");
-				printf("|                   P/p : change the percentage         |\n");
-				printf("******************************************************* |\n");
-				scanf(" %c",&mod_op);
-				if(mod_op == 'N' ||mod_op =='n' )
+				printf("\n|*************************Requirements*****************|\n");
+				printf("|            N/n : change the name                    |\n");
+				printf("|            P/p : change the marks                   |\n");
+				printf("|            D/d : change the department              |\n");
+				printf("******************************************************|\n");
+				scanf(" %c", &mod_op);
+				
+				if(mod_op == 'N' || mod_op == 'n')
 				{
-					char name[20];
-					printf("Enter the name :");
-					scanf("%s",name);
-					strcpy(temp->name,name);
+					char new_name[20];
+					printf("Enter the new name: ");
+					scanf("%s", new_name);
+					strcpy(temp->name, new_name);
+					printf("Name updated successfully!\n");
 				}
-				else if(mod_op == 'P' ||mod_op =='p' )
+				else if(mod_op == 'P' || mod_op == 'p')
 				{
 					float mark;
-					printf("Enter the percentage");
-					scanf("%f",&mark);
-					temp->marks=mark;
+					printf("Enter the new marks: ");
+					scanf("%f", &mark);
+					temp->marks = mark;
+					printf("Marks updated successfully!\n");
 				}
-
-
+				else if(mod_op == 'D' || mod_op == 'd')
+				{
+					char dept[8];
+					printf("Enter the new department: ");
+					scanf("%s", dept);
+					strcpy(temp->department, dept);
+					printf("Department updated successfully!\n");
+				}
+				save_flag = 1;  // Mark as unsaved
+				break;
 			}
-			temp=temp->next;
+			temp = temp->next;
 		}
+		if(!found)
+			printf("Name not found!\n");
 	}
-	else if(op == 'R'|| op == 'r')
+	else if(op == 'R' || op == 'r')
 	{
 		int mod_roll;
-		printf("Enter the roll no to be find ");
-		scanf("%d",&mod_roll);
-		while(temp!=NULL)
+		printf("Enter the roll no to find: ");
+		scanf("%d", &mod_roll);
+		
+		int found = 0;
+		while(temp != NULL)
 		{
-			printf("checking......\n");
 			if(temp->roll == mod_roll)
 			{
-				printf("checking2.......\n");
+				found = 1;
 				char mod_op;
-			
-      				printf("\n|*************************Requirments*****************|\n");
-				printf("|		    N/n : change the  name              |\n");
-				printf("|                   P/p : change the percentage         |\n");
-				printf("******************************************************* |\n");
-				scanf(" %c",&mod_op);	
-				if(mod_op == 'N' ||mod_op =='n' )
+				printf("\n|*************************Requirements*****************|\n");
+				printf("|            N/n : change the name                    |\n");
+				printf("|            P/p : change the marks                   |\n");
+				printf("|            D/d : change the department              |\n");
+				printf("******************************************************|\n");
+				scanf(" %c", &mod_op);
+				
+				if(mod_op == 'N' || mod_op == 'n')
 				{
-					char name[20];
-					printf("Enter the name :");
-					scanf("%s",name);
-					strcpy(head_ptr->name,name);
+					char new_name[20];
+					printf("Enter the new name: ");
+					scanf("%s", new_name);
+					strcpy(temp->name, new_name);
+					printf("Name updated successfully!\n");
 				}
-				else if(mod_op == 'P' ||mod_op =='p' )
+				else if(mod_op == 'P' || mod_op == 'p')
 				{
 					float mark;
-					printf("Enter the percentage");
-					scanf("%f",&mark);
-					temp->marks=mark;
+					printf("Enter the new marks: ");
+					scanf("%f", &mark);
+					temp->marks = mark;
+					printf("Marks updated successfully!\n");
 				}
-			
-						
-				
-
+				else if(mod_op == 'D' || mod_op == 'd')
+				{
+					char dept[8];
+					printf("Enter the new department: ");
+					scanf("%s", dept);
+					strcpy(temp->department, dept);
+					printf("Department updated successfully!\n");
+				}
+				save_flag = 1;  // Mark as unsaved
+				break;
 			}
-			temp=temp->next;
-
+			temp = temp->next;
 		}
+		if(!found)
+			printf("Roll number not found!\n");
 	}
-
-
-		
 }
-int save_flag=1;
-void save(ready*head_ptr)
+
+void save(ready *head_ptr)
 {
-	save_flag=0;
-	ready*temp=head_ptr;
-	while(temp!=NULL)
+	FILE *file = fopen("data_base.txt", "w");  // FIXED: use "w" not "a"
+	if(file == NULL)
 	{
-		FILE*file=fopen("data_base.txt","a");
-		fprintf(file,"%d  ",temp->roll);
-		fprintf(file,"%s  ",temp->name);
-		fprintf(file,"%f  \n",temp->marks);
-		fclose(file);
-		temp=temp->next;
+		printf("Error opening file!\n");
+		return;
 	}
-
+	
+	ready *temp = head_ptr;
+	int saved_count = 0;
+	while(temp != NULL)
+	{
+		if(strcmp(temp->name, "") != 0)  // Don't save deleted records
+		{
+			fprintf(file, "%d %s %.2f\n", temp->roll, temp->name, temp->marks);
+			saved_count++;
+		}
+		temp = temp->next;
+	}
+	
+	fclose(file);  // FIXED: moved outside loop
+	save_flag = 0;
+	printf("\n%d records saved successfully!\n", saved_count);
 }
+
 void sort(ready *head_ptr)
 {
-	ready *temp=(ready*)malloc(sizeof(ready));
-	temp=head_ptr;
-	ready *sort_head_ptr=NULL;	
-	printf("\n************************After sorting********************\n");
-	printf("\n----------------------------------------------------------\n");
-	while(temp!=NULL)
+	if(head_ptr == NULL)
 	{
-		ready *sort_temp=(ready*)malloc(sizeof(ready));	
-		strcpy(sort_temp->name,temp->name);
-		sort_temp->marks=temp->marks;
-		sort_temp->roll=temp->roll;
-		sort_temp->next=NULL;
-		if(sort_head_ptr==NULL)
+		printf("No records to sort!\n");
+		return;
+	}
+	
+	ready *sort_head_ptr = NULL;	
+	ready *temp = head_ptr;
+	
+	while(temp != NULL)
+	{
+		if(strcmp(temp->name, "") != 0)  // Skip deleted records
 		{
-			sort_head_ptr=sort_temp;
-		}
-		else
-		{
+			ready *sort_temp = (ready *)malloc(sizeof(ready));	
+			strcpy(sort_temp->name, temp->name);
+			strcpy(sort_temp->department, temp->department);
+			sort_temp->marks = temp->marks;
+			sort_temp->roll = temp->roll;
+			sort_temp->next = NULL;
 			
-			ready *sort_iter_header_ptr= sort_head_ptr;
-			while(sort_iter_header_ptr->next!=NULL)
+			if(sort_head_ptr == NULL)
 			{
-				if((sort_temp->name[0] < sort_iter_header_ptr->name[0]) && (sort_iter_header_ptr == sort_head_ptr))
-					break;
-				else if((sort_temp->name[0] > sort_iter_header_ptr->name[0]) && (sort_temp->name[0]< sort_iter_header_ptr->next->name[0]))
-					break;
-				
-				sort_iter_header_ptr=sort_iter_header_ptr->next;
-
-			}
-			if(sort_iter_header_ptr == sort_head_ptr)
-			{
-				sort_temp->next=sort_iter_header_ptr;
-				sort_head_ptr=sort_temp;
+				sort_head_ptr = sort_temp;
 			}
 			else
 			{
-				sort_temp->next=sort_iter_header_ptr->next;
-				sort_iter_header_ptr->next=sort_temp;
-
+				ready *sort_iter = sort_head_ptr;
+				ready *prev = NULL;
+				
+				// Find insertion point
+				while(sort_iter != NULL && strcmp(sort_temp->name, sort_iter->name) > 0)
+				{
+					prev = sort_iter;
+					sort_iter = sort_iter->next;
+				}
+				
+				if(prev == NULL)  // Insert at beginning
+				{
+					sort_temp->next = sort_head_ptr;
+					sort_head_ptr = sort_temp;
+				}
+				else  // Insert in middle or end
+				{
+					sort_temp->next = sort_iter;
+					prev->next = sort_temp;
+				}
 			}
 		}
-			temp=temp->next;
-		
+		temp = temp->next;
 	}
 	
+	printf("\n************************After Sorting********************\n");
 	display(sort_head_ptr);
+	
+	// Free sorted list
+	while(sort_head_ptr != NULL)
+	{
+		ready *temp_free = sort_head_ptr;
+		sort_head_ptr = sort_head_ptr->next;
+		free(temp_free);
+	}
 }
+
 int fun_exit()
 {
 	if(save_flag)
 	{
 		char op;
-		printf("**************************************************************************************************");
-		printf("\nE/e:Exit  without saving the file \nV/v Exit with saving the file  \n****************************************************************************************\n                 Enter the choices:");
-		scanf(" %c",&op);
-		if(op == 'v'|| op == 'V')
+		printf("**************************************************\n");
+		printf("You have unsaved changes!\n");
+		printf("V/v: Save and exit\n");
+		printf("E/e: Exit without saving\n");
+		printf("**************************************************\n");
+		printf("Enter your choice: ");
+		scanf(" %c", &op);
+		
+		if(op == 'V' || op == 'v')
 		{
 			save(head_ptr);
-			printf("\n******************************saved sucessfully********************************\n");
+			printf("\nExiting...\n");
 			return 0;
 		}
 		else
+		{
+			printf("\nExiting without saving...\n");
 			return 0;
+		}
 	}
 	else
+	{
+		printf("\nExiting...\n");
 		return 1;
+	}
 }
-void display_from_file()
-{
-	
-		char buffer[20];
-		int co=0;
-		FILE*file_open=fopen("data_base.txt","r");
-		printf("\n************************Student Details*****************************\n");
-		printf("|roll |               NAME           |            Mark              |\n");
-		printf("---------------------------------------------------------------------\n");
-	
-		while(fscanf(file_open,"%s",buffer)!=EOF)
-		{
-		
-			printf("  %s                            ",buffer);
-			co++;
-			if(co==3)
-			{
-				printf("\n");
-				printf("-------------------------------------------------------------------\n");
-				co=0;
-			}
-		}
-		
 
+void display_from_file(void)
+{
+	FILE *file_open = fopen("data_base.txt", "r");
+	if(file_open == NULL)
+	{
+		printf("No saved records found!\n");
+		return;
+	}
 	
+	printf("\n************************Student Details*****************************\n");
+	printf("| Roll |        NAME        |       Marks        |\n");
+	printf("---------------------------------------------------------------------\n");
 	
+	int roll;
+	char name[20];
+	float marks;
 	
+	while(fscanf(file_open, "%d %s %f", &roll, name, &marks) == 3)
+	{
+		printf("  %-6d %-20s %.2f\n", roll, name, marks);
+		printf("---------------------------------------------------------------------\n");
+	}
+	
+	fclose(file_open);
 }
