@@ -4,7 +4,6 @@
 
 typedef struct student
 {
-	char department[8];
 	char name[20];
 	int roll;
 	float marks;
@@ -27,6 +26,7 @@ void sort(ready *);
 int fun_exit();
 void display_from_file(void);
 void load_from_file(void);
+void reverse_print(ready *head_ptr);
 
 int main()
 {
@@ -42,6 +42,7 @@ int main()
 		printf("|                      V/v :      Save                         |\n");
 		printf("|                      E/e :      Exit                         |\n");
 		printf("|                      T/t :      Sort the list                |\n");
+		printf("|                      R/r :      Reverse the list             |\n");
 		printf("****************************************************************\n");
 
 		printf("                      Enter the choice: ");	
@@ -72,6 +73,10 @@ int main()
 		{
 			sort(head_ptr);
 		}
+		else if(options == 'R' || options == 'r')
+		{
+			reverse_print(head_ptr);
+		}
 		else if(options == 'E' || options == 'e')  // FIXED: proper condition
 		{
 			int op = fun_exit();
@@ -97,7 +102,6 @@ void load_from_file(void)
 		temp->roll = roll;
 		strcpy(temp->name, name);
 		temp->marks = marks;
-		strcpy(temp->department, "N/A");
 		temp->next = NULL;
 		
 		if(head_ptr == NULL)
@@ -153,7 +157,6 @@ void delete(ready *temp)
 				delete_flag++;
 				found = 1;
 				strcpy(temper->name, "");
-				strcpy(temper->department, "");
 				temper->marks = 0;
 				printf("Record deleted successfully!\n");
 				break;
@@ -178,7 +181,6 @@ void delete(ready *temp)
 				delete_flag++;
 				found = 1;
 				strcpy(temper->name, "");
-				strcpy(temper->department, "");
 				temper->marks = 0;
 				printf("Record deleted successfully!\n");
 				break;
@@ -202,7 +204,7 @@ void display(ready *temp)
 	}
 	
 	printf("\n************************Student Details*****************************\n");
-	printf("| Roll |        NAME        |    Department    |       Marks        |\n");
+	printf("| Roll |        NAME        |       Marks        |\n");
 	printf("---------------------------------------------------------------------\n");
 	
 	int has_records = 0;
@@ -210,7 +212,7 @@ void display(ready *temp)
 	{
 		if(strcmp(temp->name, "") != 0)  // Skip deleted records
 		{
-			printf("  %-6d %-20s %-18s %.2f\n", temp->roll, temp->name, temp->department, temp->marks);
+			printf("  %-6d %-20s %.2f\n", temp->roll, temp->name, temp->marks);
 			printf("---------------------------------------------------------------------\n");
 			has_records = 1;
 		}
@@ -443,6 +445,7 @@ void sort(ready *head_ptr)
 	ready *sort_head_ptr = NULL;	
 	ready *temp = head_ptr;
 	
+	// Create a sorted copy (temporary)
 	while(temp != NULL)
 	{
 		if(strcmp(temp->name, "") != 0)  // Skip deleted records
@@ -485,16 +488,31 @@ void sort(ready *head_ptr)
 		temp = temp->next;
 	}
 	
-	printf("\n************************After Sorting********************\n");
-	display(sort_head_ptr);
+	// Display sorted view (temporary, not saved)
+	printf("\n******************Sorted View (Not Saved)******************\n");
+	printf("| Roll |        NAME        |    Department    |       Marks        |\n");
+	printf("---------------------------------------------------------------------\n");
 	
-	// Free sorted list
+	ready *display_temp = sort_head_ptr;
+	while(display_temp != NULL)
+	{
+		printf("  %-6d %-20s %-18s %.2f\n", display_temp->roll, display_temp->name, 
+		       display_temp->department, display_temp->marks);
+		printf("---------------------------------------------------------------------\n");
+		display_temp = display_temp->next;
+	}
+	
+	// Free sorted list (it was just for display)
 	while(sort_head_ptr != NULL)
 	{
 		ready *temp_free = sort_head_ptr;
 		sort_head_ptr = sort_head_ptr->next;
 		free(temp_free);
 	}
+	
+	char options;
+	printf("\nEnter any key to return to menu: ");
+	scanf(" %c", &options);
 }
 
 int fun_exit()
@@ -553,4 +571,61 @@ void display_from_file(void)
 	}
 	
 	fclose(file_open);
+}
+
+void reverse_print(ready *head_ptr)
+{
+	if(head_ptr == NULL)
+	{
+		printf("No records to display!\n");
+		return;
+	}
+	
+	// Count nodes (excluding deleted ones)
+	int count = 0;
+	ready *temp = head_ptr;
+	while(temp != NULL)
+	{
+		if(strcmp(temp->name, "") != 0)
+			count++;
+		temp = temp->next;
+	}
+	
+	if(count == 0)
+	{
+		printf("No active records to display!\n");
+		return;
+	}
+	
+	// Create array to store pointers
+	ready **arr = (ready **)malloc(count * sizeof(ready *));
+	int idx = 0;
+	temp = head_ptr;
+	
+	while(temp != NULL)
+	{
+		if(strcmp(temp->name, "") != 0)
+		{
+			arr[idx++] = temp;
+		}
+		temp = temp->next;
+	}
+	
+	// Display in reverse (temporary view, not saved)
+	printf("\n******************Reversed View (Not Saved)******************\n");
+	printf("| Roll |        NAME        |    Department    |       Marks        |\n");
+	printf("---------------------------------------------------------------------\n");
+	
+	for(int i = count - 1; i >= 0; i--)
+	{
+		printf("  %-6d %-20s %-18s %.2f\n", arr[i]->roll, arr[i]->name, 
+		       arr[i]->department, arr[i]->marks);
+		printf("---------------------------------------------------------------------\n");
+	}
+	
+	free(arr);
+	
+	char options;
+	printf("\nEnter any key to return to menu: ");
+	scanf(" %c", &options);
 }
