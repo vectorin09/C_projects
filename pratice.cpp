@@ -71,6 +71,7 @@ void strong_number(int number)
 	cout<<"welcom to strong number checker \n"<<endl;
 	int sum;int original_number;int n;
 	original_number=number;
+	cout<<"\n"<<endl;
 	
 
 	original_number=number;
