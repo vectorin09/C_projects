@@ -1,0 +1,5 @@
+initialize the character error are very simple
+		make an char array by using ([][] ) which is 2d array and also we can use pointers;
+
+ 
+exit is not makeit correctly
