@@ -1,10 +1,12 @@
 #include<iostream>
+#include<stdlib.h>
 #include<string.h>
 #include<stdio.h>
 #include<cstdlib>
 #include<iomanip>
 
 int buffer=0;
+int deletes=0;
 const char* enter="  Enter the choices : ";
 using namespace std;
 class st
@@ -12,7 +14,7 @@ class st
         public:
 		
 	        int book_id;
-		string book_name;
+		std::	string  book_name;
                 st*left;
                 st*right;
        		
@@ -26,6 +28,8 @@ class node_act
 	public:
         	void add()
         	{
+			
+			
 			st*temp;
 			temp =new st;
         	        cout<<"Enter the book id:";
@@ -36,12 +40,18 @@ class node_act
 			temp->right=NULL;
         	        add_tree(&head_ptr,temp);
 			//system("clear");
-			print_tree(head_ptr);
+			//print_tree(head_ptr);
 		
 
         	}
 		void add_tree(st**node,st*new_node)
 		{
+			if(deletes !=0)
+			{
+				deleted_add(*node,new_node);
+				deletes--;
+				return;
+			}
 			if(*node==NULL)
 			{
 				*node=new_node;
@@ -64,7 +74,8 @@ class node_act
 			if(head_node!=NULL)
 			{
 
-				cout<<head_node->book_name<<"->";
+	    			//cout<<head_node->book_name<<"->";
+	    			cout<<head_node->book_id<<"->";
 				print_tree(head_node->left);
 				print_tree(head_node->right);
 			
@@ -77,24 +88,63 @@ class node_act
 			}
 		}
 		
-	  	int search_node(st*head_ptr,string node=" ",int id=1111)
+	  	st *search_node(st*head_ptr,int id,string buffer)
 		{
-			if((head_ptr ->book_id == id )|| (strcpy(head_ptr->book_name,node)==1))
-				return 1;
-			else if(head_ptr != NULL)
+			if(head_ptr == NULL)
+				return NULL;
+			if(head_ptr ->book_id == id||head_ptr->book_name == buffer )
 			{
-		       	
-				search_node(head_ptr->left,node,id);
-		       	
-				search_node(head_ptr->right,node,id);
-				
-
-			}	
-			else
-		       	{
-				return -1;
+				return head_ptr;
 			}
+		       	search_node(head_ptr->left,id,buffer);
+			search_node(head_ptr->right,id,buffer);
 		}
+		void update_node(st*head_ptr,int id,char* book)
+		{
+			 if(head_ptr == NULL)
+                                return ;
+                        if(head_ptr ->book_id == id )
+                        {
+                                 head_ptr->book_id=999;
+				 cout<<head_ptr->book_id<<endl;
+				 return;
+                        }
+                        update_node(head_ptr->left,id,book);
+                        update_node(head_ptr->right,id,book);
+		}
+		void deleted_add(st*node,st*new_node)
+		{
+			if(node==NULL)
+			{
+				return;
+
+			}
+			if(node->book_id == 9999)
+			{
+				node->book_id =new_node->book_id;
+				node->book_name=new_node->book_name;
+				return;
+			}
+			deleted_add(node->left,new_node);
+			deleted_add(node->right,new_node);
+		}
+		void delete_node(st*node,int id)
+		{
+			if(node == NULL)
+                                return ;
+                        if(node->book_id == id )
+                        {
+				node->book_id =9999;
+				node->book_name=" ";
+				deletes++;
+                                return ;
+                        }
+                        delete_node(node->left,id);
+                        delete_node(node->right,id);
+
+		}
+
+		
 };
 
 class ui
@@ -120,13 +170,14 @@ class ui
 			cout<<"|10.Exit                                            |"<<endl;
 			cout<<"-----------------------------------------------------"<<endl;
 						
-				
+	
+	
 			
 								
 
 
 		}
-		int  mem_ui(string menu)
+		void  mem_ui(string menu)
 		{
 			cout<<" "<<endl;
 			cout<<"----------------------------------------------------"<<endl;
@@ -141,6 +192,17 @@ class ui
 
 
 		}
+		void show_ui(string book_id,string book_name)
+		{
+			cout<<"-------------------------------------------------------------"<<endl;
+			int width=60;
+			string content=book_id+"  |  "+book_name;
+			int padding=width-2-content.size();
+			if(padding <0) padding=0;
+			cout<<"|"<<content<<string(padding,' ')<<"|"<<endl;
+			cout<<"-------------------------------------------------------------"<<endl;
+		}
+	                             
 		string preference()
 		{
 
@@ -148,7 +210,7 @@ class ui
 			cin>>buffer;
 
 			char array[][20]={"Add New Book","update Book Details","Remove Book","Search Book","View All Books","Issuse Book","Return Book","List Issued Books","Save","Exit"};
-			if(buffer == 10) exit=1;
+			if(buffer >= 10) _Exit(0);
 			
 			else
 				return array[buffer-1];
@@ -156,11 +218,13 @@ class ui
 			
 			
 		}
+
 		
 
 };
 int main()
 {
+	
 	int buf=0;
 	node_act details;
 	cout<<"Enter the inputs:";
@@ -169,13 +233,9 @@ int main()
 	{
 		details.add();
 	}
-	buf=0;
-	buf=details.search_node(head_ptr,"kuthu");
-	if(buf == 1)
-		cout<<"yeah we have those details";
-	else
-		cout<<"naah we don't have those details";
-	
-		
+	details.update_node(head_ptr,43,"dfd");
+	details.print_tree(head_ptr);
+
+
 }
 			
