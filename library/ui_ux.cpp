@@ -1,6 +1,8 @@
 #include"class.h"
+
 int buffer=0;
 int deletes=0;
+node_act op;
 		void ui::main_ui(void)
 		{
 			
@@ -19,11 +21,17 @@ int deletes=0;
 			cout<<"|10.Exit                                            |"<<endl;
 			cout<<"-----------------------------------------------------"<<endl;
 			string _65=preference();
-			if((_65!="Add New Book")&&(_65!="update Book Details"))
+			if((_65!="Add New Book")&&(_65!="update Book Details")&&(_65!="Issuse Book")&&(_65!="View All Books"))
 				mem_ui(_65);
+			else if(_65 == "View All Books")
+			{
+				
+				op.print_books(head_ptr);
+			}	
 			else 
 			{
-				mem_ui(_65);
+			
+				op.add(_65.c_str());
 			}
 						
 	
@@ -49,11 +57,11 @@ int deletes=0;
 
 
 		}
-		void ui::show_ui(string book_id,string book_name)
+		void ui::show_ui(int book_id,string book_name)
 		{
 			cout<<"-------------------------------------------------------------"<<endl;
 			int width=60;
-			string content=book_id+"  |  "+book_name;
+			string content=book_id+"|"+book_name;
 			int padding=width-2-content.size();
 			if(padding <0) padding=0;
 			cout<<"|"<<content<<string(padding,' ')<<"|"<<endl;
