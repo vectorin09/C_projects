@@ -26,19 +26,19 @@ typedef struct user
 	user *left=NULL;
 	user *right=NULL;
 }user;
-st *head_ptr=NULL;
-user*user_head_ptr=NULL;
+extern st *head_ptr;
+extern user*user_head_ptr;
 
 
 class node_act
 {
 	public:
 	
-		void add(const char*pre);
+		void add(const char* pre);
 		void add_books(st** node,st*new_node);
 		void add_issue(user**node,user*new_node);
-		void print_books(st*head_node);
-		void print_issue(user*head_node);
+		void print_books(st*head_ptr);
+		void print_issue(user*user_head_ptr);
 		st*search_node(st*head,int id,string buffer);
 		user*user_search_node(user*head_ptr,int id,string buffer);
 		void update_node(st*head_ptr,int id,char*book);
@@ -53,11 +53,11 @@ class ui
 		
 		void main_ui(void);
 		void mem_ui(string menu);
-		void show_ui(string book_id,string book_name);
+		void show_ui(int  book_id,string book_name);
 		string preference();
 
 }; 
-node_act cl;
-ui interface;
+extern node_act  cl;
 
+extern ui interface;
 
