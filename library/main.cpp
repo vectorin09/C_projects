@@ -10,7 +10,7 @@
 #include"class.h"
 using namespace std;
 
-
+node_act cl;
 int main()
 {
 	
